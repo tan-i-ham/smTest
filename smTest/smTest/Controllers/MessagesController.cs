@@ -24,11 +24,6 @@ namespace smTest
         HtmlWeb client = new HtmlWeb();
         //private object txtDecoderType;
 
-       
-        /// <summary>
-        /// POST: api/Messages
-        /// Receive a message from a user and reply to it
-        /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
         
@@ -41,8 +36,33 @@ namespace smTest
                 if (activity.Attachments?.Count > 0 && activity.Attachments.First().ContentType.StartsWith("image"))//IF NULL 不會往下,有東西才繼續run
                 {
                     //user傳一張照片
-                    decodeQRCode(reply, activity.Attachments.First().ContentUrl);
+                    string uriName = decodeQRCode(reply, activity.Attachments.First().ContentUrl);
+                    Uri uriResult;
+                    bool result = Uri.TryCreate(uriName, UriKind.Absolute, out uriResult)
+                        && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+                    if (result == true)
+                    {
 
+                        var infos = await DetailsFromPage(uriName);
+                        string alltext = "作業日期\t\t作業種類\t\t作業內容\n\n============================\n\n";
+
+                        foreach (var info in infos)
+                        {
+                            alltext += String.Join(", ", info.Date);
+                            alltext += "\t\t";
+                            alltext += String.Join(", ", info.Type);
+                            alltext += "\t\t";
+                            alltext += String.Join(", ", info.Content);
+                            alltext += "\n\n";
+
+                            //table.Rows.Add(info.Date, info.Type, info.Content, info.Ref);
+                        }
+                        reply.Text = alltext;
+                    }
+                    else
+                    {
+                        reply.Text = result.ToString() + " 不是網址!";
+                    }
                 }
                 else if (activity.ChannelId == "facebook")
                 {
@@ -141,7 +161,7 @@ namespace smTest
             return response;
         }
 
-        private void decodeQRCode(Activity reply, string url)
+        private string decodeQRCode(Activity reply, string url)
         {
             /* List<Attachment> att = new List<Attachment>();
             att.Add(new HeroCard() //建立fb ui格式的api
@@ -166,9 +186,10 @@ namespace smTest
             if (result != null)
             {
                 //txtDecoderType.Text = result.BarcodeFormat.ToString();
-                reply.Text = result.Text;
+                //reply.Text = result.Text;
+                return result.Text;
             }
-
+            return result.Text;
             //reply.Attachments = att;
         }
         //讀取圖片
