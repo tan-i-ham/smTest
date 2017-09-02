@@ -13,7 +13,12 @@ using Newtonsoft.Json;
 using Microsoft.ProjectOxford.Vision;
 using System.Drawing;
 using ZXing;
-using System.Text.RegularExpressions;
+
+using Newtonsoft.Json.Linq;
+
+using System.Net.Http.Headers;
+using Autofac;
+
 
 namespace smTest
 {
@@ -23,7 +28,9 @@ namespace smTest
        
         HtmlWeb client = new HtmlWeb();
         //private object txtDecoderType;
-
+        
+       
+        //////////////
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
         
@@ -42,6 +49,7 @@ namespace smTest
 
                    
                 }
+                
                 else if (activity.ChannelId == "facebook")
                 {
                     //讀fb data
@@ -60,17 +68,21 @@ namespace smTest
                     //quick menu
                     else if (activity.Text == "我可以幹嘛")
                     {
-                        reply.Text = "請選擇按鈕";
+                        reply.Text = "請選擇按鈕 from mac";
                         reply.SuggestedActions = new SuggestedActions()
                         {
                             Actions = new List<CardAction>()
                             {
-                                new CardAction(){Title="輸入追朔碼", Type=ActionTypes.ImBack, Value="輸入追朔碼"},
-                                new CardAction(){Title="上傳QR code", Type=ActionTypes.ImBack, Value="上傳QR code"},
+                                new CardAction(){Title="輸入追朔碼", Type=ActionTypes.ImBack, Value="輸入追朔碼2"},
+                                new CardAction(){Title="上傳QR code", Type=ActionTypes.ImBack, Value="上傳QR code2"},
                                 new CardAction(){Title="去產銷履歷網站", Type=ActionTypes.OpenUrl, Value="http://taft.coa.gov.tw/"},
                             }
                         };
                         
+                    }
+                    else if (activity.Text == "try")
+                    {
+                        GeneTemplate(reply);
                     }
 
                     else if (activity.Text == "上傳QR code")
@@ -86,11 +98,13 @@ namespace smTest
                         }
                     }
 
+              
+
                     else if (fbData.message.quick_reply != null)
                     {
                         reply.Text = $"your choice is {fbData.message.quick_reply.payload}";
                     }
-                 
+
 
                     else
                     {
@@ -104,9 +118,17 @@ namespace smTest
                     }
                 }
 
+
+                else
+                {
+                    GeneTemplate(reply);
+
+                    //reply.Text = "@@@@";
+                }
                 await connector.Conversations.ReplyToActivityAsync(reply);
             }
-   
+            
+            
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;
         }
@@ -142,6 +164,7 @@ namespace smTest
             }
         }
 
+      
         //讀取QrCode
         private string decodeQRCode(Activity reply, string url)
         {
@@ -170,6 +193,26 @@ namespace smTest
                 response.GetResponseStream();
             Bitmap bitmap2 = new Bitmap(responseStream);
             return bitmap2;
+        }
+
+        private void GeneTemplate(Activity reply)
+        {
+            List<Attachment> att = new List<Attachment>();
+            att.Add(new HeroCard() //建立fb ui格式的api
+            {
+                Title = "查詢選項",
+                Subtitle = "Select from below",
+                Images = new List<CardImage>() { new CardImage("https://cdn.ready-market.com/1/9816a644//Templates/pic/vegetable.jpg?v=0d7a3372") },
+                Buttons = new List<CardAction>()
+                {
+                    new CardAction(){ Title = "詳細生產履歷", Type=ActionTypes.OpenUrl, Value= "http://taft.coa.gov.tw/" },
+                    new CardAction(){Title = "產地2", Type= ActionTypes.ImBack, Value= $"南投" },
+
+                }
+            }.ToAttachment());
+
+            reply.Attachments = att;
+            
         }
 
         //爬蟲的function
