@@ -19,33 +19,47 @@ using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using Autofac;
 
+using Microsoft.Bot.Builder.FormFlow;
+
 
 namespace smTest
 {
     [BotAuthentication]
     public class MessagesController : ApiController
     {
+        internal static IDialog<ProfileForm> MakeRootDialog()
+        {
+            return Chain.From(() => FormDialog.FromForm(ProfileForm.BuildForm));
+        }
+
         HtmlWeb client = new HtmlWeb();
         Recipe[] topRecipe = new Recipe[5];
         Product[] ProductInfo = new Product[1];
         Resume[] ProductResume = new Resume[100];
-  
+        
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
-        
+            
+
             if (activity.Type == ActivityTypes.Message)
             {
                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                 Activity reply = activity.CreateReply();
-                
-                //user傳一張照片
-                if (activity.Attachments?.Count > 0 && activity.Attachments.First().ContentType.StartsWith("image"))//IF NULL 不會往下,有東西才繼續run
+                /////
+                await Conversation.SendAsync(activity, MakeRootDialog);
+            ////
+            //user傳一張照片
+            if (activity.Attachments?.Count > 0 && activity.Attachments.First().ContentType.StartsWith("image"))//IF NULL 不會往下,有東西才繼續run
                 {
-                // uriName 是decode qr code 完後的網址
-                   string uriName = decodeQRCode(reply, activity.Attachments.First().ContentUrl);
-                // receivedText 是爬蟲過後的訊息
-                   reply.Attachments =  await PassScrapTextAsync(reply,uriName);
-                   //reply.Text = receivedText + uriName;
+                    // uriName 是decode qr code 完後的網址
+                    ProductInfo[0].uriName = decodeQRCode(reply, activity.Attachments.First().ContentUrl);
+                    // receivedText 是爬蟲過後的訊息
+                    //reply.Attachments =  await PassScrapTextAsync(reply, ProductInfo[0].uriName);
+                    //reply.Text = ProductInfo[0].uriName;
+                    GenericTemplate(reply, ProductInfo[0].uriName, activity);
+                    /////
+
+                    
                 }
                 
                 else if (activity.ChannelId == "facebook")
@@ -64,7 +78,7 @@ namespace smTest
                         reply.Text = result.Description.Captions.First().Text;
 
                     }
-                   
+
                     //quick menu
                     else if (activity.Text == "我可以幹嘛")
                     {
@@ -78,32 +92,72 @@ namespace smTest
                                 new CardAction(){Title="去產銷履歷網站", Type=ActionTypes.OpenUrl, Value="http://taft.coa.gov.tw/"},
                             }
                         };
-                        
+
                     }
-                    else if (activity.Text == "try")
-                    {
-                        GenericTemplate(reply);
-                    }
+              
 
                     else if (activity.Text == "上傳QR code")
                     {
                         reply.Text = "請上傳QR code圖片";
                         //上傳圖片之後跑的東西
 
-                        if (activity.Attachments?.Count > 0 && activity.Attachments.First().ContentType.StartsWith("image"))//IF NULL 不會往下,有東西才繼續run
-                        {
-                            //user傳一張照片
-                            decodeQRCode(reply, activity.Attachments.First().ContentUrl);
-   
-                        }
                     }
-
-              
-
-                    else if (fbData.message.quick_reply != null)
+                    else if (activity.Text == "詳細生產履歷")
                     {
-                        reply.Text = $"your choice is {fbData.message.quick_reply.payload}";
+                        reply.Text = ProductInfo[0].uriName;
                     }
+                    else if (activity.Text == "履歷資訊")
+                    {
+                        reply.Text = "test";
+                        reply.SuggestedActions = new SuggestedActions()
+                        {
+                            Actions = new List<CardAction>()
+                        {
+                            new CardAction(){Title="生產者", Type=ActionTypes.ImBack, Value="生產者"},
+                            new CardAction(){Title="產地", Type=ActionTypes.ImBack, Value="產地"},
+                            new CardAction(){Title="產品名稱", Type=ActionTypes.ImBack, Value="產品名稱"},
+                            new CardAction(){Title="生產日期", Type=ActionTypes.ImBack, Value="生產日期"},
+                            new CardAction(){Title="tttt", Type=ActionTypes.ImBack, Value="tttt"},
+
+
+                        }
+                        };
+                    }
+                    else if(activity.Text == "生產者")
+                    {
+                        //var farmresults = await FarmRecord(ProductInfo[0].uriName, ProductInfo);
+                      
+
+                            reply.Text = reply.Conversation.ToString() + "!!!!";
+                        
+                    }
+
+
+                   /* else if (fbData.message.quick_reply != null)
+                    {
+                        var farmresults = await FarmRecord(ProductInfo[0].uriName, ProductInfo);
+                        switch (fbData.message.quick_reply.payload)
+                        {
+                            case "生產者":
+                                reply.Text = ProductInfo[0].Farmer;
+                                break;
+                            case "產地":
+                                reply.Text = ProductInfo[0].Origin;
+                                break;
+                            case "產品名稱":
+                                reply.Text = ProductInfo[0].ProductName;
+                                break;
+                            case "生產日期":
+                                reply.Text = ProductInfo[0].PackedDate;
+                                break;
+                            default:
+                                reply.Text = "failed!!";
+                                break;
+                        }
+
+
+                        reply.Text = $"your choice is {fbData.message.quick_reply.payload}";
+                    }*/
 
 
                     else
@@ -125,7 +179,7 @@ namespace smTest
 
                 else
                 {
-                    GenericTemplate(reply);
+                    //GenericTemplate(reply);
 
                     //reply.Text = "@@@@";
                 }
@@ -144,10 +198,10 @@ namespace smTest
         }
 
 
-        private async Task<IList<Attachment>> PassScrapTextAsync(Activity context,string uriName)
+        private async Task<IList<Attachment>> PassScrapTextAsync(Activity context,string url)
         {
             Uri uriResult;
-            bool result = Uri.TryCreate(uriName, UriKind.Absolute, out uriResult)
+            bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult)
                 && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
 
 
@@ -155,7 +209,7 @@ namespace smTest
             if (result == true)
             {
 
-                int cnt = await ProductionRecordAsync (uriName, ProductResume);
+                int cnt = await ProductionRecordAsync (url, ProductResume);
                 // string alltext = "作業日期\t\t作業種類\t\t作業內容\n\n============================\n\n";
               
                 if (cnt != -1) {
@@ -166,7 +220,7 @@ namespace smTest
                             Subtitle = ProductResume[i].Type + "\t" + ProductResume[i].Content ,
                             
                         };
-                    
+                        
                         att.Add(tc.ToAttachment());
     
                     }
@@ -215,8 +269,9 @@ namespace smTest
             return bitmap2;
         }
 
-        private void GenericTemplate(Activity reply)
+        private void GenericTemplate(Activity reply, string url,Activity activity)
         {
+
             List<Attachment> att = new List<Attachment>();
             att.Add(new HeroCard() //建立fb ui格式的api
             {
@@ -225,14 +280,17 @@ namespace smTest
                 Images = new List<CardImage>() { new CardImage("https://cdn.ready-market.com/1/9816a644//Templates/pic/vegetable.jpg?v=0d7a3372") },
                 Buttons = new List<CardAction>()
                 {
-                    new CardAction(){ Title = "詳細生產履歷", Type=ActionTypes.OpenUrl, Value= "http://taft.coa.gov.tw/" },
-                    new CardAction(){Title = "產地2", Type= ActionTypes.ImBack, Value= $"南投" },
+                    new CardAction(){ Title = "詳細生產履歷", Type=ActionTypes.ImBack, Value= "詳細生產履歷" },
+                    new CardAction(){Title = "履歷資訊", Type= ActionTypes.ImBack, Value= "履歷資訊" },
 
                 }
             }.ToAttachment());
 
             reply.Attachments = att;
-            
+            if (activity.Text == "詳細生產履歷")
+            {
+                reply.Text = ProductInfo[0].uriName+"!!!";
+            }
         }
 
         // 擷取產品履歷資料
@@ -264,6 +322,48 @@ namespace smTest
             }
 
             return cnt;
+        }
+
+        private async Task<Boolean> FarmRecord(string url, Product[] pro)
+        {
+            var doc = await Task.Factory.StartNew(() => client.Load(url));
+
+            var companyShort = doc.GetElementbyId("ctl00_ContentPlaceHolder1_Producer").InnerText;
+            var Farmer = doc.GetElementbyId("ctl00_ContentPlaceHolder1_FarmerName").InnerText;
+            var productName = doc.GetElementbyId("ctl00_ContentPlaceHolder1_ProductName").InnerText;
+            var origin = doc.GetElementbyId("ctl00_ContentPlaceHolder1_Place").InnerText;
+            var packedDate = doc.GetElementbyId("ctl00_ContentPlaceHolder1_PackDate").InnerText;
+            var varifiedCompany = doc.GetElementbyId("ctl00_ContentPlaceHolder1_ao_name").InnerText;
+
+            if (companyShort == null)
+            {
+                return false;
+            }
+
+            pro[0].CompanyShort = companyShort;
+            pro[0].Farmer = Farmer;
+            pro[0].ProductName = productName;
+            pro[0].Origin = origin;
+            pro[0].PackedDate = packedDate;
+            pro[0].VarifiedCompany = varifiedCompany;
+
+            return true;
+        }
+        private void ImageTemplate(Activity reply, string url)
+        {
+            List<Attachment> att = new List<Attachment>();
+            att.Add(new HeroCard() //建立fb ui格式的api
+            {
+                Title = "Cognitive services",
+                Subtitle = "Select from below",
+                Images = new List<CardImage>() { new CardImage(url) },
+                Buttons = new List<CardAction>()
+                {
+                    new CardAction(ActionTypes.PostBack, "辨識圖片", value: $"Analyze>{url}")//帶json payload
+                }
+            }.ToAttachment());
+
+            reply.Attachments = att;
         }
     }
     

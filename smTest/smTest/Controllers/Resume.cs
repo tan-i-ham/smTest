@@ -23,6 +23,7 @@ namespace smTest
         public string Origin;
         public string PackedDate;
         public string VarifiedCompany;
+        public string uriName;
     }
 
     public struct Recipe
