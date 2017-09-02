@@ -56,3 +56,4 @@ D:\summerProject2017\smTest\smTest\bin\zxing.xml
 D:\summerProject2017\smTest\smTest\bin\zxing.presentation.pdb
 D:\summerProject2017\smTest\smTest\bin\zxing.presentation.xml
 D:\summerProject2017\smTest\smTest\bin\Bot.Builder.ChannelConnector.dll
+D:\summerProject2017\smTest\smTest\bin\Microsoft.Cognitive.LUIS.dll

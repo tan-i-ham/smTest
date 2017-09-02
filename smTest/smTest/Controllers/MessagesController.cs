@@ -25,12 +25,8 @@ namespace smTest
     [BotAuthentication]
     public class MessagesController : ApiController
     {
-       
         HtmlWeb client = new HtmlWeb();
-        //private object txtDecoderType;
-        
-       
-        //////////////
+  
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
         
@@ -38,20 +34,20 @@ namespace smTest
             {
                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                 Activity reply = activity.CreateReply();
-                //await Conversation.SendAsync(activity, () => new Dialogs.RootDialog());
                 
                 //user傳一張照片
                 if (activity.Attachments?.Count > 0 && activity.Attachments.First().ContentType.StartsWith("image"))//IF NULL 不會往下,有東西才繼續run
                 {
+                // uriName 是decode qr code 完後的網址
                    string uriName = decodeQRCode(reply, activity.Attachments.First().ContentUrl);
-                   string rt = await PassScrapTextAsync(uriName);
-                   reply.Text = rt+ uriName;
-
-                   
+                // receivedText 是爬蟲過後的訊息
+                    string receivedText = await PassScrapTextAsync(uriName);
+                   reply.Text = receivedText + uriName;
                 }
                 
                 else if (activity.ChannelId == "facebook")
                 {
+                    
                     //讀fb data
                     var fbData = JsonConvert.DeserializeObject<FBChannelModel>(activity.ChannelData.ToString());
                     if (fbData.postback != null && fbData.postback.payload.StartsWith("Analyze"))
@@ -65,6 +61,7 @@ namespace smTest
                         reply.Text = result.Description.Captions.First().Text;
 
                     }
+                   
                     //quick menu
                     else if (activity.Text == "我可以幹嘛")
                     {
@@ -82,7 +79,7 @@ namespace smTest
                     }
                     else if (activity.Text == "try")
                     {
-                        GeneTemplate(reply);
+                        GenericTemplate(reply);
                     }
 
                     else if (activity.Text == "上傳QR code")
@@ -110,18 +107,22 @@ namespace smTest
                     {
                         //如果傳網址 一樣爬的到
 
-                        string rt = await PassScrapTextAsync(activity.Text);
-                        reply.Text = "!!!!" + rt + "!!!!";
-                        
+                        //string rt = await PassScrapTextAsync(activity.Text);
+                        //reply.Text = "!!!!" + rt + "!!!!";
+
                         //reply.Text = $"echo:{activity.Text}";
-                        
+
+                        //用 luis 去偵測使用者的意思
+                        await ProcessLUIS(activity,activity.Text);
+
+
                     }
                 }
 
 
                 else
                 {
-                    GeneTemplate(reply);
+                    GenericTemplate(reply);
 
                     //reply.Text = "@@@@";
                 }
@@ -132,6 +133,13 @@ namespace smTest
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;
         }
+
+        private async Task ProcessLUIS(Activity activity, string text)
+        {
+            await Conversation.SendAsync(activity, () => new Dialogs.LuisDialog());
+
+        }
+
 
         private async Task<String> PassScrapTextAsync(string uriName)
         {
@@ -195,13 +203,13 @@ namespace smTest
             return bitmap2;
         }
 
-        private void GeneTemplate(Activity reply)
+        private void GenericTemplate(Activity reply)
         {
             List<Attachment> att = new List<Attachment>();
             att.Add(new HeroCard() //建立fb ui格式的api
             {
                 Title = "查詢選項",
-                Subtitle = "Select from below",
+                Subtitle = "選任一項執行功能",
                 Images = new List<CardImage>() { new CardImage("https://cdn.ready-market.com/1/9816a644//Templates/pic/vegetable.jpg?v=0d7a3372") },
                 Buttons = new List<CardAction>()
                 {
