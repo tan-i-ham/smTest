@@ -26,6 +26,9 @@ namespace smTest
     public class MessagesController : ApiController
     {
         HtmlWeb client = new HtmlWeb();
+        Recipe[] topRecipe = new Recipe[5];
+        Product[] ProductInfo = new Product[1];
+        Resume[] ProductResume = new Resume[100];
   
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
@@ -41,8 +44,8 @@ namespace smTest
                 // uriName 是decode qr code 完後的網址
                    string uriName = decodeQRCode(reply, activity.Attachments.First().ContentUrl);
                 // receivedText 是爬蟲過後的訊息
-                    string receivedText = await PassScrapTextAsync(uriName);
-                   reply.Text = receivedText + uriName;
+                   reply.Attachments =  await PassScrapTextAsync(reply,uriName);
+                   //reply.Text = receivedText + uriName;
                 }
                 
                 else if (activity.ChannelId == "facebook")
@@ -141,35 +144,44 @@ namespace smTest
         }
 
 
-        private async Task<String> PassScrapTextAsync(string uriName)
+        private async Task<IList<Attachment>> PassScrapTextAsync(Activity context,string uriName)
         {
-
             Uri uriResult;
             bool result = Uri.TryCreate(uriName, UriKind.Absolute, out uriResult)
                 && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+
+
+            List<Attachment> att = new List<Attachment>();
             if (result == true)
             {
 
-                var infos = await DetailsFromPage(uriName);
-                string alltext = "作業日期\t\t作業種類\t\t作業內容\n\n============================\n\n";
-
-                foreach (var info in infos)
-                {
-                    alltext += String.Join(", ", info.Date);
-                    alltext += "\t\t";
-                    alltext += String.Join(", ", info.Type);
-                    alltext += "\t\t";
-                    alltext += String.Join(", ", info.Content);
-                    alltext += "\n\n";
-
-                    //table.Rows.Add(info.Date, info.Type, info.Content, info.Ref);
+                int cnt = await ProductionRecordAsync (uriName, ProductResume);
+                // string alltext = "作業日期\t\t作業種類\t\t作業內容\n\n============================\n\n";
+              
+                if (cnt != -1) {
+                    for (int i = 0; i < cnt; ++i) {
+                        ThumbnailCard tc = new ThumbnailCard()
+                        {
+                            Title = ProductResume[i].Date,
+                            Subtitle = ProductResume[i].Type + "\t" + ProductResume[i].Content ,
+                            
+                        };
+                    
+                        att.Add(tc.ToAttachment());
+    
+                    }
+                } else {
+                    context.Text = "failed!!";
                 }
-                return alltext;
+
+                return att;
             }
             else
             {
-                return result.ToString() + " 不是網址!";
-            }
+                return att;
+
+                //context.Text = result.ToString() + " 不是網址!";
+            } 
         }
 
       
@@ -223,18 +235,18 @@ namespace smTest
             
         }
 
-        //爬蟲的function
-        private async Task<List<Resume>> DetailsFromPage(string url)
+        // 擷取產品履歷資料
+        private async Task<int> ProductionRecordAsync(string url, Resume[] resume)
         {
             var doc = await Task.Factory.StartNew(() => client.Load(url));
+
             var dateNodes = doc.DocumentNode.SelectNodes("//*[@id=\"tableSort\"]//tr/td[1]");
             var typeNodes = doc.DocumentNode.SelectNodes("//*[@id=\"tableSort\"]//tr/td[2]");
             var contentNodes = doc.DocumentNode.SelectNodes("//*[@id=\"tableSort\"]//tr/td[3]");
             var refNodes = doc.DocumentNode.SelectNodes("//*[@id=\"tableSort\"]//tr//td[4]");
 
-            if (dateNodes == null || typeNodes == null || contentNodes == null)
-            {
-                return new List<Resume>();
+            if (dateNodes == null || typeNodes == null || contentNodes == null) {
+                return -1;
             }
 
             var innerDate = dateNodes.Select(node => node.InnerText).ToList();
@@ -242,14 +254,16 @@ namespace smTest
             var innerContent = contentNodes.Select(node => node.InnerText).ToList();
             var innerRef = refNodes.Select(node => node.InnerText).ToList();
 
-            List<Resume> toReturn = new List<Resume>();
+            int cnt = innerDate.Count();
 
-            for (int i = 0; i < innerDate.Count(); ++i)
-            {
-                toReturn.Add(new Resume() { Date = innerDate[i], Type = innerTypes[i], Content = innerContent[i], Ref = innerRef[i] });
+            for (int i = 0; i < innerDate.Count(); ++i) {
+                resume[i].Date = innerDate[i];
+                resume[i].Type = innerTypes[i];
+                resume[i].Content = innerContent[i];
+                resume[i].Ref = innerRef[i];
             }
-       
-            return toReturn;
+
+            return cnt;
         }
     }
     

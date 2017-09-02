@@ -57,3 +57,62 @@ D:\summerProject2017\smTest\smTest\bin\zxing.presentation.pdb
 D:\summerProject2017\smTest\smTest\bin\zxing.presentation.xml
 D:\summerProject2017\smTest\smTest\bin\Bot.Builder.ChannelConnector.dll
 D:\summerProject2017\smTest\smTest\bin\Microsoft.Cognitive.LUIS.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Bot Application.dll.config
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Bot Application.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Bot Application.pdb
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Autofac.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Bot.Builder.ChannelConnector.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Chronic.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\HtmlAgilityPack.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.Bot.Builder.Autofac.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.Bot.Builder.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.Bot.Builder.Extensions.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.Bot.Connector.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.Cognitive.LUIS.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.IdentityModel.Protocol.Extensions.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.ProjectOxford.Vision.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.Rest.ClientRuntime.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.WindowsAzure.Configuration.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Newtonsoft.Json.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\QRCoder.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\System.IdentityModel.Tokens.Jwt.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\System.Net.Http.Formatting.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\System.Web.Http.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\System.Web.Http.WebHost.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\UnityEngine.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\zxing.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\zxing.presentation.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Autofac.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\HtmlAgilityPack.pdb
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\HtmlAgilityPack.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.Bot.Builder.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.Bot.Builder.Autofac.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.Bot.Builder.Extensions.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.Bot.Connector.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.IdentityModel.Protocol.Extensions.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.WindowsAzure.Configuration.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Newtonsoft.Json.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\System.IdentityModel.Tokens.Jwt.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\System.Net.Http.Formatting.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\System.Web.Http.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\System.Web.Http.WebHost.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\zxing.pdb
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\zxing.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\zxing.presentation.pdb
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\zxing.presentation.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\ar\Microsoft.Bot.Builder.resources.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\cs\Microsoft.Bot.Builder.resources.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\de-dE\Microsoft.Bot.Builder.resources.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\en\Microsoft.Bot.Builder.resources.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\es\Microsoft.Bot.Builder.resources.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\fa\Microsoft.Bot.Builder.resources.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\fr\Microsoft.Bot.Builder.resources.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\it\Microsoft.Bot.Builder.resources.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\ja\Microsoft.Bot.Builder.resources.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\nl\Microsoft.Bot.Builder.resources.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\pt-BR\Microsoft.Bot.Builder.resources.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\ru\Microsoft.Bot.Builder.resources.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\zh-hans\Microsoft.Bot.Builder.resources.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\obj\Release\smTest.csprojResolveAssemblyReference.cache
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\obj\Release\Bot Application.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\obj\Release\Bot Application.pdb

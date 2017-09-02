@@ -56,3 +56,62 @@ D:\summerProject2017\smTest\smTest\bin\zxing.xml
 D:\summerProject2017\smTest\smTest\bin\zxing.presentation.pdb
 D:\summerProject2017\smTest\smTest\bin\zxing.presentation.xml
 D:\summerProject2017\smTest\smTest\bin\Bot.Builder.ChannelConnector.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Bot Application.dll.config
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Bot Application.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Bot Application.pdb
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Autofac.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Bot.Builder.ChannelConnector.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Chronic.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\HtmlAgilityPack.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Microsoft.Bot.Builder.Autofac.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Microsoft.Bot.Builder.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Microsoft.Bot.Builder.Extensions.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Microsoft.Bot.Connector.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Microsoft.Cognitive.LUIS.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Microsoft.IdentityModel.Protocol.Extensions.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Microsoft.ProjectOxford.Vision.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Microsoft.Rest.ClientRuntime.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Microsoft.WindowsAzure.Configuration.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Newtonsoft.Json.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\QRCoder.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\System.Net.Http.Formatting.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\System.Web.Http.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\System.Web.Http.WebHost.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\UnityEngine.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\zxing.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\zxing.presentation.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Autofac.xml
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\HtmlAgilityPack.pdb
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\HtmlAgilityPack.xml
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Microsoft.Bot.Builder.xml
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Microsoft.Bot.Builder.Autofac.xml
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Microsoft.Bot.Builder.Extensions.xml
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Microsoft.Bot.Connector.xml
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Microsoft.IdentityModel.Protocol.Extensions.xml
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Microsoft.WindowsAzure.Configuration.xml
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\Newtonsoft.Json.xml
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\System.IdentityModel.Tokens.Jwt.xml
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\System.Net.Http.Formatting.xml
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\System.Web.Http.xml
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\System.Web.Http.WebHost.xml
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\zxing.pdb
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\zxing.xml
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\zxing.presentation.pdb
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\zxing.presentation.xml
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\ar\Microsoft.Bot.Builder.resources.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\cs\Microsoft.Bot.Builder.resources.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\de-dE\Microsoft.Bot.Builder.resources.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\en\Microsoft.Bot.Builder.resources.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\es\Microsoft.Bot.Builder.resources.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\fa\Microsoft.Bot.Builder.resources.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\fr\Microsoft.Bot.Builder.resources.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\it\Microsoft.Bot.Builder.resources.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\ja\Microsoft.Bot.Builder.resources.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\nl\Microsoft.Bot.Builder.resources.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\pt-BR\Microsoft.Bot.Builder.resources.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\ru\Microsoft.Bot.Builder.resources.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\bin\zh-hans\Microsoft.Bot.Builder.resources.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\obj\Debug\smTest.csprojResolveAssemblyReference.cache
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\obj\Debug\Bot Application.dll
+C:\Users\kathe\Documents\Visual Studio 2017\Projects\MSP-SummerProject\smTest\smTest\obj\Debug\Bot Application.pdb
