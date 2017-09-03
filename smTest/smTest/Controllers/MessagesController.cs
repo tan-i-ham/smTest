@@ -27,19 +27,7 @@ namespace MongoDBCreate
         [BsonId]
         public ObjectId ID { get; set;}
         public string Uriname { get; set; }
-        public int op { get; set; }
-        public string dishName1 { get; set; }
-        public string dishPhoto1 { get; set; }
-        public string dishUrl1 { get; set; }
-        public string dishName2 { get; set; }
-        public string dishPhoto2 { get; set; }
-        public string dishUrl2 { get; set; }
-        public string dishName3 { get; set; }
-        public string dishPhoto3 { get; set; }
-        public string dishUrl3 { get; set; }
-        public string dishName4 { get; set; }
-        public string dishPhoto4 { get; set; }
-        public string dishUrl4 { get; set; }
+        public int op { get; set; }  
     }
 }
 namespace smTest
@@ -74,81 +62,76 @@ namespace smTest
                     var result = await collection.UpdateOneAsync(filter, update);
                     ////
                     Trace.TraceInformation("imgfor");
-                    var user = collection.Find(new BsonDocument()).ToListAsync();
+                    var user = collection.Find(new BsonDocument()).Project(x => new { x.Uriname }).ToList();
+                    //var user = collection.Find(new BsonDocument()).ToListAsync();
                     Trace.TraceInformation("imgback");
                     ////
 
+                    string uriName = decodeQRCode(reply, activity.Attachments.First().ContentUrl);
+                    
+                    foreach (var tmp2 in user)
+                    {
+                        Trace.TraceInformation(tmp2.Uriname);
+                    }
+                    reply.Text = uriName ;
+
                     Trace.TraceInformation("DB.");
-                    GeneralTemplate(reply);
+                    GenericTemplate(reply);
                     Trace.TraceInformation("General done");
 
                 }
-                else if (activity.Text == "menu")
-                {
-                    Trace.TraceInformation("menu not fb");
-
-                    /*var recipes = collection.Find(r => r.op == 1).Limit(1).ToList();
-
-                    foreach (var recipe in recipes)
-                    {
-                        reply.Text = recipe.dishName1;
-                        Trace.TraceInformation("menutext");
-                    }*/
-                    MenuTemplate(reply);
-                    //await Conversation.SendAsync(activity, () => new CarouselCardsDialog());
-                }
-
 
                 else if (activity.ChannelId == "facebook")
                 {
 
                     //讀fb data
                     var fbData = JsonConvert.DeserializeObject<FBChannelModel>(activity.ChannelData.ToString());
-                    
-                    
-                    if (activity.Text == "try")
-                    {
-                        Trace.TraceInformation("try");
-                   
-                        // GenericTemplate(reply);
-                        MenuTemplate(reply);
-                        Trace.TraceInformation("db_success");
-                    }
 
-                   
-                    else if (activity.Text == "menu")
-                    {
-
-                        Trace.TraceInformation("menu");
-
-                        /*var recipes = collection.Find(r => r.op == 1).Limit(1).ToList();
-
-                        foreach (var recipe in recipes)
-                        {
-                            reply.Text = recipe.dishName1;
-                            Trace.TraceInformation("menutext");
-                        }
-                        */
-                    }
-
-                    else if (activity.Text == "詳細生產履歷")
+                    if (activity.Text == "詳細生產履歷")
                     {
                         //var user = collection.Find(r => r.op == 1).Limit(1).ToList();
                         string url = " ";
                         Trace.TraceInformation("detail");
-                        /*foreach (var tmp in user)
+
+                        Trace.TraceInformation("imgfor");
+                        var user = collection.Find(new BsonDocument()).Project(x => new { x.Uriname }).ToList();
+                        //var user = collection.Find(new BsonDocument()).ToListAsync();
+                        Trace.TraceInformation("imgback");
+                        ////
+
+                        foreach (var tmp2 in user)
                         {
-                            url = tmp.Uriname;
+                            url=tmp2.Uriname;
                         }
-                        reply.Attachments = await PassScrapTextAsync(reply, url);*/
+                       
+                        reply.Attachments = await PassScrapTextAsync(reply, url);
 
                         Trace.TraceInformation("detail_done");
                     }
+
+                    else if (activity.Text == "推薦食譜")
+                    {
+                        Trace.TraceInformation("recipe");
+                        string url = " ";
+
+                        Trace.TraceInformation("for");
+                        var user = collection.Find(new BsonDocument()).Project(x => new { x.Uriname }).ToList();
+                        Trace.TraceInformation("back");
+                        ////
+
+                        foreach (var tmp2 in user)
+                        {
+                            url = tmp2.Uriname;
+                        }
+                        var futherInfo = await getFurtherInfo(url, topRecipe);
+                        //reply.Text = topRecipe[1].dishName;
+                        MenuTemplate(reply, topRecipe);
+                    }
+
                     else if (activity.Text == "履歷資訊")
                     {
                         //await Conversation.SendAsync(activity, () => new CarouselCardsDialog());
                         Trace.TraceInformation("reseme");
-                        reply.Text = "test";
                         reply.SuggestedActions = new SuggestedActions()
                         {
                             Actions = new List<CardAction>()
@@ -165,16 +148,21 @@ namespace smTest
 
                     else if (fbData.message.quick_reply != null)
                     {
-                        //var user = collection.Find(r => r.op == 1).Limit(1).ToList();
+                        
                         string url=" ";
 
-                        /*foreach (var tmp in user)
+                        Trace.TraceInformation("for");
+                        var user = collection.Find(new BsonDocument()).Project(x => new { x.Uriname }).ToList();
+                        Trace.TraceInformation("back");
+                        ////
+
+                        foreach (var tmp2 in user)
                         {
-                            url = tmp.Uriname;
+                            url = tmp2.Uriname;
                         }
 
-                        var farmresults = await FarmRecord(url, ProductInfo);*/
-                        
+                        var farmresults = await FarmRecord(url, ProductInfo);
+                        reply.Text = ProductInfo[0].Farmer;
                         switch (fbData.message.quick_reply.payload)
                         {
                             case "生產者":
@@ -198,7 +186,7 @@ namespace smTest
                         //reply.Text = $"your choice is {fbData.message.quick_reply.payload}";
                     }
 
-
+                    
                     else
                     {
                         reply.Text = "點選下列按鈕操作";
@@ -226,52 +214,44 @@ namespace smTest
             await Conversation.SendAsync(activity, () => new Dialogs.LuisDialog());
         }
 
-        private void MenuTemplate(Activity reply)
+        private void MenuTemplate(Activity reply, Recipe[] re)
         {
+
             reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
-            reply.Attachments = GetCardsAttachments();
+            reply.Attachments = GetCardsAttachments(re);
         }
 
       
-        private static IList<Attachment> GetCardsAttachments()
+        private static IList<Attachment> GetCardsAttachments(Recipe[] re)
         {
+            string dish = "點選看食譜";
             Trace.TraceInformation("0903");
             return new List<Attachment>()
             {
                  GetHeroCard(
-                    "Azure Functions",
-                    "Process events with a serverless code architecture",
-                    "An event-based serverless compute experience to accelerate your development. It can scale based on demand and you pay only for the resources you consume.",
-                    new CardImage(url: "https://azurecomcdn.azureedge.net/cvt-5daae9212bb433ad0510fbfbff44121ac7c759adc284d7a43d60dbbf2358a07a/images/page/services/functions/01-develop.png"),
-                    new CardAction(ActionTypes.OpenUrl, "Learn more", value: "https://azure.microsoft.com/en-us/services/functions/")),
-                GetHeroCard(
-                    "Azure Functions",
-                    "Process events with a serverless code architecture",
-                    "An event-based serverless compute experience to accelerate your development. It can scale based on demand and you pay only for the resources you consume.",
-                    new CardImage(url: "https://azurecomcdn.azureedge.net/cvt-5daae9212bb433ad0510fbfbff44121ac7c759adc284d7a43d60dbbf2358a07a/images/page/services/functions/01-develop.png"),
-                    new CardAction(ActionTypes.OpenUrl, "Learn more", value: "https://azure.microsoft.com/en-us/services/functions/")),
-                GetHeroCard(
-                    "Cognitive Services",
-                    "Build powerful intelligence into your applications to enable natural and contextual interactions",
-                    "Enable natural and contextual interaction with tools that augment users' experiences using the power of machine-based intelligence. Tap into an ever-growing collection of powerful artificial intelligence algorithms for vision, speech, language, and knowledge.",
-                    new CardImage(url: "https://azurecomcdn.azureedge.net/cvt-68b530dac63f0ccae8466a2610289af04bdc67ee0bfbc2d5e526b8efd10af05a/images/page/services/cognitive-services/cognitive-services.png"),
-                    new CardAction(ActionTypes.OpenUrl, "Learn more", value: "https://azure.microsoft.com/en-us/services/cognitive-services/")),
+                    re[0].dishName,
+                    new CardImage(url: re[0].dishPhoto ),
+                    new CardAction(ActionTypes.OpenUrl,  dish, value: re[0].dishUrl )),
                  GetHeroCard(
-                    "Cognitive Services",
-                    "Build powerful intelligence into your applications to enable natural and contextual interactions",
-                    "Enable natural and contextual interaction with tools that augment users' experiences using the power of machine-based intelligence. Tap into an ever-growing collection of powerful artificial intelligence algorithms for vision, speech, language, and knowledge.",
-                    new CardImage(url: "https://azurecomcdn.azureedge.net/cvt-68b530dac63f0ccae8466a2610289af04bdc67ee0bfbc2d5e526b8efd10af05a/images/page/services/cognitive-services/cognitive-services.png"),
-                    new CardAction(ActionTypes.OpenUrl, "Learn more", value: "https://azure.microsoft.com/en-us/services/cognitive-services/")),
+                    re[1].dishName,
+                    new CardImage(url: re[1].dishPhoto ),
+                    new CardAction(ActionTypes.OpenUrl,  dish, value: re[1].dishUrl )),
+                 GetHeroCard(
+                    re[2].dishName,
+                    new CardImage(url: re[2].dishPhoto ),
+                    new CardAction(ActionTypes.OpenUrl,  dish, value: re[2].dishUrl )),
+                 GetHeroCard(
+                    re[3].dishName,
+                    new CardImage(url: re[3].dishPhoto ),
+                    new CardAction(ActionTypes.OpenUrl,  dish, value: re[3].dishUrl )),
             };
         }
 
-        private static Attachment GetHeroCard(string title, string subtitle, string text, CardImage cardImage, CardAction cardAction)
+        private static Attachment GetHeroCard(string title, CardImage cardImage, CardAction cardAction)
         {
             var heroCard = new HeroCard
             {
                 Title = title,
-                Subtitle = subtitle,
-                Text = text,
                 Images = new List<CardImage>() { cardImage },
                 Buttons = new List<CardAction>() { cardAction },
             };
@@ -381,9 +361,9 @@ namespace smTest
                 Images = new List<CardImage>() { new CardImage("https://cdn.ready-market.com/1/9816a644//Templates/pic/vegetable.jpg?v=0d7a3372") },
                 Buttons = new List<CardAction>()
                 {
-                    new CardAction(){ Title = "詳細生產履歷", Type=ActionTypes.ImBack, Value= "詳細生產履歷" },
+                    new CardAction(){Title = "詳細生產履歷", Type=ActionTypes.ImBack, Value= "詳細生產履歷" },
                     new CardAction(){Title = "履歷資訊", Type= ActionTypes.ImBack, Value= "履歷資訊" },
-                    new CardAction(){Title = "推薦菜單", Type= ActionTypes.ImBack, Value= "推薦菜單" },
+                    new CardAction(){Title = "推薦食譜", Type= ActionTypes.ImBack, Value= "推薦食譜" },
 
                 }
             }.ToAttachment());
