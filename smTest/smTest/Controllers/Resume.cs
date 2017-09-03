@@ -9,21 +9,21 @@ namespace smTest
 {
     public struct Resume
     {
-        public string Date { get; set; }
-        public string Type { get; set; }
-        public string Content { get; set; }
-        public string Ref { get; set; }
+        public string Date;
+        public string Type;
+        public string Content;
+        public string Ref;
     }
 
     public struct Product
     {
+        public string UriName;
         public string CompanyShort;
         public string Farmer;
         public string ProductName;
         public string Origin;
         public string PackedDate;
         public string VarifiedCompany;
-        public string uriName;
     }
 
     public struct Recipe

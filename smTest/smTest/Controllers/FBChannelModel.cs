@@ -11,7 +11,7 @@ namespace smTest
         public Postback postback { get; set; }
         public Location location { get; set; }
     }
-    
+
     public class Location
     {
         public double altitude { get; set; }

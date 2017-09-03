@@ -73,10 +73,15 @@ D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTe
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.ProjectOxford.Vision.dll
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.Rest.ClientRuntime.dll
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.WindowsAzure.Configuration.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\MongoDB.Bson.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\MongoDB.Driver.Core.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\MongoDB.Driver.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\MongoDB.Driver.Legacy.dll
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Newtonsoft.Json.dll
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\QRCoder.dll
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\System.IdentityModel.Tokens.Jwt.dll
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\System.Net.Http.Formatting.dll
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\System.Runtime.InteropServices.RuntimeInformation.dll
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\System.Web.Http.dll
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\System.Web.Http.WebHost.dll
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\UnityEngine.dll
@@ -91,6 +96,10 @@ D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTe
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.Bot.Connector.xml
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.IdentityModel.Protocol.Extensions.xml
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Microsoft.WindowsAzure.Configuration.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\MongoDB.Bson.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\MongoDB.Driver.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\MongoDB.Driver.Core.xml
+D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\MongoDB.Driver.Legacy.xml
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\Newtonsoft.Json.xml
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\System.IdentityModel.Tokens.Jwt.xml
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\bin\System.Net.Http.Formatting.xml

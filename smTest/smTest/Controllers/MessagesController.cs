@@ -13,129 +13,127 @@ using Newtonsoft.Json;
 using Microsoft.ProjectOxford.Vision;
 using System.Drawing;
 using ZXing;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoDB.Bson.Serialization.Attributes;
 
 using Newtonsoft.Json.Linq;
 
 using System.Net.Http.Headers;
 using Autofac;
+using MongoDB.Driver.Builders;
+using System.Diagnostics;
 
-using Microsoft.Bot.Builder.FormFlow;
-
-
+namespace MongoDBCreate
+{
+    public class ProductDB
+    {
+        [BsonId]
+        public ObjectId ID { get; set;}
+        public string Uriname { get; set; }
+        public int op { get; set; }
+    }
+}
 namespace smTest
 {
     [BotAuthentication]
     public class MessagesController : ApiController
     {
-        internal static IDialog<ProfileForm> MakeRootDialog()
-        {
-            return Chain.From(() => FormDialog.FromForm(ProfileForm.BuildForm));
-        }
-
         HtmlWeb client = new HtmlWeb();
         Recipe[] topRecipe = new Recipe[5];
         Product[] ProductInfo = new Product[1];
         Resume[] ProductResume = new Resume[100];
+
         
+  
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
+            var connectionString = "mongodb://msp12:msp2017@ds123084.mlab.com:23084/msp";
+            var client = new MongoClient(connectionString);
+            var db = client.GetDatabase("msp");
+            IMongoCollection<MongoDBCreate.ProductDB> collection = db.GetCollection<MongoDBCreate.ProductDB>("productResume");
             
-
             if (activity.Type == ActivityTypes.Message)
             {
                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                 Activity reply = activity.CreateReply();
-                /////
-                await Conversation.SendAsync(activity, MakeRootDialog);
-            ////
-            //user傳一張照片
-            if (activity.Attachments?.Count > 0 && activity.Attachments.First().ContentType.StartsWith("image"))//IF NULL 不會往下,有東西才繼續run
-                {
-                    // uriName 是decode qr code 完後的網址
-                    ProductInfo[0].uriName = decodeQRCode(reply, activity.Attachments.First().ContentUrl);
-                    // receivedText 是爬蟲過後的訊息
-                    //reply.Attachments =  await PassScrapTextAsync(reply, ProductInfo[0].uriName);
-                    //reply.Text = ProductInfo[0].uriName;
-                    GenericTemplate(reply, ProductInfo[0].uriName, activity);
-                    /////
 
-                    
+                //user傳一張照片
+                if (activity.Attachments?.Count > 0 && activity.Attachments.First().ContentType.StartsWith("image"))//IF NULL 不會往下,有東西才繼續run
+                {
+                    /*var connectionString = "mongodb://msp12:msp2017@ds123084.mlab.com:23084/msp";
+                    var client = new MongoClient(connectionString);
+                    var db = client.GetDatabase("msp");
+                    IMongoCollection<MongoDBCreate.ProductDB> collection = db.GetCollection<MongoDBCreate.ProductDB>("productResume");*/
+                    //MongoDBCreate.ProductDB newItem = new MongoDBCreate.ProductDB { Uriname = decodeQRCode(reply, activity.Attachments.First().ContentUrl), op = 1 };
+
+
+                    // uriName 是decode qr code 完後的網址
+                    //var UriName = decodeQRCode(reply, activity.Attachments.First().ContentUrl);
+
+                    //collection.InsertOne(newItem);
+                    var filter = Builders<MongoDBCreate.ProductDB>.Filter.Eq("op", 1);
+                    var update = Builders<MongoDBCreate.ProductDB>.Update
+                        .Set("Uriname", decodeQRCode(reply, activity.Attachments.First().ContentUrl));
+                    var result = await collection.UpdateOneAsync(filter, update);
+                    var user = collection.Find(r => r.op == 1).Limit(1).ToList();
+
+                    /*foreach (var tmp in user)
+                    {
+                        reply.Text = tmp.Uriname;
+                        continue;
+                    }*/
+                    // receivedText 是爬蟲過後的訊息
+                    //string receivedText = await PassScrapTextAsync(uriName);
+                 
+                    Trace.TraceInformation("DB.");
+                    GenericTemplate(activity);
+                    Trace.TraceInformation("GenericTemplate done");
+
                 }
-                
+
                 else if (activity.ChannelId == "facebook")
                 {
-                    
+
                     //讀fb data
                     var fbData = JsonConvert.DeserializeObject<FBChannelModel>(activity.ChannelData.ToString());
-                    if (fbData.postback != null && fbData.postback.payload.StartsWith("Analyze"))
+                    
+                    
+                    if (activity.Text == "try")
                     {
-                        var url = fbData.postback.payload.Split('>')[1];
+                        var user = collection.Find(r => r.op == 1).Limit(1).ToList();
 
-                        //vision
-
-                        VisionServiceClient client = new VisionServiceClient("786ccca1c75d434dbbffd67a8194942b", "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0");
-                        var result = await client.AnalyzeImageAsync(url, new VisualFeature[] { VisualFeature.Description });
-                        reply.Text = result.Description.Captions.First().Text;
-
-                    }
-
-                    //quick menu
-                    else if (activity.Text == "我可以幹嘛")
-                    {
-                        reply.Text = "請選擇按鈕 from mac";
-                        reply.SuggestedActions = new SuggestedActions()
+                        foreach (var tmp in user)
                         {
-                            Actions = new List<CardAction>()
-                            {
-                                new CardAction(){Title="輸入追朔碼", Type=ActionTypes.ImBack, Value="輸入追朔碼2"},
-                                new CardAction(){Title="上傳QR code", Type=ActionTypes.ImBack, Value="上傳QR code2"},
-                                new CardAction(){Title="去產銷履歷網站", Type=ActionTypes.OpenUrl, Value="http://taft.coa.gov.tw/"},
-                            }
-                        };
-
+                            reply.Text = tmp.Uriname;
+                        }
+                       // GenericTemplate(reply);
                     }
-              
 
                     else if (activity.Text == "上傳QR code")
                     {
                         reply.Text = "請上傳QR code圖片";
                         //上傳圖片之後跑的東西
 
-                    }
-                    else if (activity.Text == "詳細生產履歷")
-                    {
-                        reply.Text = ProductInfo[0].uriName;
-                    }
-                    else if (activity.Text == "履歷資訊")
-                    {
-                        reply.Text = "test";
-                        reply.SuggestedActions = new SuggestedActions()
+                        if (activity.Attachments?.Count > 0 && activity.Attachments.First().ContentType.StartsWith("image"))//IF NULL 不會往下,有東西才繼續run
                         {
-                            Actions = new List<CardAction>()
-                        {
-                            new CardAction(){Title="生產者", Type=ActionTypes.ImBack, Value="生產者"},
-                            new CardAction(){Title="產地", Type=ActionTypes.ImBack, Value="產地"},
-                            new CardAction(){Title="產品名稱", Type=ActionTypes.ImBack, Value="產品名稱"},
-                            new CardAction(){Title="生產日期", Type=ActionTypes.ImBack, Value="生產日期"},
-                            new CardAction(){Title="tttt", Type=ActionTypes.ImBack, Value="tttt"},
-
+                            //user傳一張照片
+                            decodeQRCode(reply, activity.Attachments.First().ContentUrl);
 
                         }
-                        };
-                    }
-                    else if(activity.Text == "生產者")
-                    {
-                        //var farmresults = await FarmRecord(ProductInfo[0].uriName, ProductInfo);
-                      
-
-                            reply.Text = reply.Conversation.ToString() + "!!!!";
-                        
                     }
 
 
-                   /* else if (fbData.message.quick_reply != null)
+
+                    else if (fbData.message.quick_reply != null)
                     {
-                        var farmresults = await FarmRecord(ProductInfo[0].uriName, ProductInfo);
+                        var user = collection.Find(r => r.op == 1).Limit(1).ToList();
+                        string url="aaa";
+                        foreach (var tmp in user)
+                        {
+                            url = tmp.Uriname;
+                        }
+                        var farmresults = await FarmRecord(url, ProductInfo);
                         switch (fbData.message.quick_reply.payload)
                         {
                             case "生產者":
@@ -154,24 +152,14 @@ namespace smTest
                                 reply.Text = "failed!!";
                                 break;
                         }
-
-
                         reply.Text = $"your choice is {fbData.message.quick_reply.payload}";
-                    }*/
+                    }
 
 
                     else
-                    {
-                        //如果傳網址 一樣爬的到
-
-                        //string rt = await PassScrapTextAsync(activity.Text);
-                        //reply.Text = "!!!!" + rt + "!!!!";
-
-                        //reply.Text = $"echo:{activity.Text}";
-
+                    { 
                         //用 luis 去偵測使用者的意思
-                        await ProcessLUIS(activity,activity.Text);
-
+                        await ProcessLUIS(activity, activity.Text);
 
                     }
                 }
@@ -179,9 +167,7 @@ namespace smTest
 
                 else
                 {
-                    //GenericTemplate(reply);
-
-                    //reply.Text = "@@@@";
+                    GenericTemplate(reply);
                 }
                 await connector.Conversations.ReplyToActivityAsync(reply);
             }
@@ -194,48 +180,81 @@ namespace smTest
         private async Task ProcessLUIS(Activity activity, string text)
         {
             await Conversation.SendAsync(activity, () => new Dialogs.LuisDialog());
-
         }
 
 
-        private async Task<IList<Attachment>> PassScrapTextAsync(Activity context,string url)
+        private async Task<String> PassScrapTextAsync(string uriName)
         {
             Uri uriResult;
-            bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult)
+            bool result = Uri.TryCreate(uriName, UriKind.Absolute, out uriResult)
                 && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
-
-
-            List<Attachment> att = new List<Attachment>();
             if (result == true)
             {
+                int cnt = await ProductionRecord (uriName, ProductResume);
+                string alltext = "作業日期\t\t作業種類\t\t作業內容\n\n============================\n\n";
 
-                int cnt = await ProductionRecordAsync (url, ProductResume);
-                // string alltext = "作業日期\t\t作業種類\t\t作業內容\n\n============================\n\n";
-              
-                if (cnt != -1) {
-                    for (int i = 0; i < cnt; ++i) {
-                        ThumbnailCard tc = new ThumbnailCard()
-                        {
-                            Title = ProductResume[i].Date,
-                            Subtitle = ProductResume[i].Type + "\t" + ProductResume[i].Content ,
-                            
-                        };
-                        
-                        att.Add(tc.ToAttachment());
-    
+                 if (cnt != -1)
+                 {
+                    for (int i = 0; i < cnt; ++i)
+                    {
+                        alltext += String.Join(", ", ProductResume[i].Date);
+                        alltext += "\t\t";
+                        alltext += String.Join(", ", ProductResume[i].Type);
+                        alltext += "\t\t";
+                        alltext += String.Join(", ", ProductResume[i].Content);
+                        alltext += "\n\n";
                     }
-                } else {
-                    context.Text = "failed!!";
+                } else
+                {
+                    alltext = "ERROR in parsing resume\n";
                 }
 
-                return att;
+                var farmresults = await FarmRecord(uriName, ProductInfo);
+
+                if (farmresults) {
+                    alltext += "\n**************\n";
+
+                    alltext += String.Join("\n", ProductInfo[0].CompanyShort);
+                    alltext += String.Join("\n", ProductInfo[0].Farmer);
+                    alltext += String.Join("\n", ProductInfo[0].Origin);
+                    alltext += String.Join("\n", ProductInfo[0].PackedDate);
+                    alltext += String.Join("\n", ProductInfo[0].ProductName);
+                    alltext += String.Join("\n", ProductInfo[0].VarifiedCompany);
+                }
+                else {
+                    alltext += String.Join("\n", "Errors in parsing farmresults\n");
+                }
+
+                bool hasRecipe = await getFurtherInfo(uriName, topRecipe);
+
+                if (hasRecipe) {
+                    alltext += "\n**************\n";
+
+                    for (int i = 0; i < 4; ++i) {
+                        alltext += String.Join("\n", topRecipe[i].dishName);
+                        alltext += String.Join("\n", topRecipe[i].dishPhoto);
+                        alltext += String.Join("\n", topRecipe[i].dishUrl);
+                        alltext += String.Join("\n", "------------------\n");
+                    }
+                }
+                else {
+                    alltext += String.Join("\n", "No recipe found\n");
+                }
+
+                var pediaUrl = await getPediaUrl(uriName);
+
+                if (pediaUrl != "NULL") {
+                    alltext += String.Join("\n", pediaUrl);
+                }
+                else {
+                    alltext += String.Join("\n", "No URL found\n");
+                }
+                return alltext;
             }
             else
             {
-                return att;
-
-                //context.Text = result.ToString() + " 不是網址!";
-            } 
+                return result.ToString() + " 不是網址!";
+            }
         }
 
       
@@ -269,9 +288,8 @@ namespace smTest
             return bitmap2;
         }
 
-        private void GenericTemplate(Activity reply, string url,Activity activity)
+        private void GenericTemplate(Activity reply)
         {
-
             List<Attachment> att = new List<Attachment>();
             att.Add(new HeroCard() //建立fb ui格式的api
             {
@@ -280,21 +298,18 @@ namespace smTest
                 Images = new List<CardImage>() { new CardImage("https://cdn.ready-market.com/1/9816a644//Templates/pic/vegetable.jpg?v=0d7a3372") },
                 Buttons = new List<CardAction>()
                 {
-                    new CardAction(){ Title = "詳細生產履歷", Type=ActionTypes.ImBack, Value= "詳細生產履歷" },
-                    new CardAction(){Title = "履歷資訊", Type= ActionTypes.ImBack, Value= "履歷資訊" },
+                    new CardAction(){ Title = "詳細生產履歷", Type=ActionTypes.OpenUrl, Value= "http://taft.coa.gov.tw/" },
+                    new CardAction(){Title = "產地2", Type= ActionTypes.ImBack, Value= $"南投" },
 
                 }
             }.ToAttachment());
 
             reply.Attachments = att;
-            if (activity.Text == "詳細生產履歷")
-            {
-                reply.Text = ProductInfo[0].uriName+"!!!";
-            }
+            
         }
 
         // 擷取產品履歷資料
-        private async Task<int> ProductionRecordAsync(string url, Resume[] resume)
+        private async Task<int> ProductionRecord(string url, Resume[] resume)
         {
             var doc = await Task.Factory.StartNew(() => client.Load(url));
 
@@ -303,7 +318,8 @@ namespace smTest
             var contentNodes = doc.DocumentNode.SelectNodes("//*[@id=\"tableSort\"]//tr/td[3]");
             var refNodes = doc.DocumentNode.SelectNodes("//*[@id=\"tableSort\"]//tr//td[4]");
 
-            if (dateNodes == null || typeNodes == null || contentNodes == null) {
+            if (dateNodes == null || typeNodes == null || contentNodes == null)
+            {
                 return -1;
             }
 
@@ -314,7 +330,8 @@ namespace smTest
 
             int cnt = innerDate.Count();
 
-            for (int i = 0; i < innerDate.Count(); ++i) {
+            for (int i = 0; i < innerDate.Count(); ++i)
+            {
                 resume[i].Date = innerDate[i];
                 resume[i].Type = innerTypes[i];
                 resume[i].Content = innerContent[i];
@@ -335,7 +352,7 @@ namespace smTest
             var packedDate = doc.GetElementbyId("ctl00_ContentPlaceHolder1_PackDate").InnerText;
             var varifiedCompany = doc.GetElementbyId("ctl00_ContentPlaceHolder1_ao_name").InnerText;
 
-            if (companyShort == null)
+            if (companyShort == null) 
             {
                 return false;
             }
@@ -349,21 +366,54 @@ namespace smTest
 
             return true;
         }
-        private void ImageTemplate(Activity reply, string url)
-        {
-            List<Attachment> att = new List<Attachment>();
-            att.Add(new HeroCard() //建立fb ui格式的api
-            {
-                Title = "Cognitive services",
-                Subtitle = "Select from below",
-                Images = new List<CardImage>() { new CardImage(url) },
-                Buttons = new List<CardAction>()
-                {
-                    new CardAction(ActionTypes.PostBack, "辨識圖片", value: $"Analyze>{url}")//帶json payload
-                }
-            }.ToAttachment());
 
-            reply.Attachments = att;
+        private async Task<Boolean> getFurtherInfo(string url, Recipe[] re)
+        {
+            var doc = await Task.Factory.StartNew(() => client.Load(url));
+
+            var nulltest = doc.DocumentNode.SelectSingleNode("//*[@id=\"ctl00_ContentPlaceHolder1_RecommandDIV\"]/div/ul/li[1]/p/a");
+
+            if (nulltest != null)
+            {
+                re[0].dishName = doc.DocumentNode.SelectSingleNode("//*[@id=\"ctl00_ContentPlaceHolder1_RecommandDIV\"]/div/ul/li[1]/p/a").InnerText.ToString();
+                re[0].dishPhoto = doc.DocumentNode.SelectSingleNode("//*[@id=\"ctl00_ContentPlaceHolder1_RecommandDIV\"]/div/ul/li[1]/div/a/img").Attributes["src"].Value;
+                re[0].dishUrl = "https://taft.coa.gov.tw" + doc.DocumentNode.SelectSingleNode("//*[@id=\"ctl00_ContentPlaceHolder1_RecommandDIV\"]/div/ul/li[1]/p/a").Attributes["href"].Value;
+
+                re[1].dishName = doc.DocumentNode.SelectSingleNode("//*[@id=\"ctl00_ContentPlaceHolder1_RecommandDIV\"]/div/ul/li[2]/p/a").InnerText.ToString();
+                re[1].dishPhoto = doc.DocumentNode.SelectSingleNode("//*[@id=\"ctl00_ContentPlaceHolder1_RecommandDIV\"]/div/ul/li[2]/div/a/img").Attributes["src"].Value;
+                re[1].dishUrl = "https://taft.coa.gov.tw" + doc.DocumentNode.SelectSingleNode("//*[@id=\"ctl00_ContentPlaceHolder1_RecommandDIV\"]/div/ul/li[2]/p/a").Attributes["href"].Value;
+
+                re[2].dishName = doc.DocumentNode.SelectSingleNode("//*[@id=\"ctl00_ContentPlaceHolder1_RecommandDIV\"]/div/ul/li[3]/p/a").InnerText.ToString();
+                re[2].dishPhoto = doc.DocumentNode.SelectSingleNode("//*[@id=\"ctl00_ContentPlaceHolder1_RecommandDIV\"]/div/ul/li[3]/div/a/img").Attributes["src"].Value;
+                re[2].dishUrl = "https://taft.coa.gov.tw" + doc.DocumentNode.SelectSingleNode("//*[@id=\"ctl00_ContentPlaceHolder1_RecommandDIV\"]/div/ul/li[3]/p/a").Attributes["href"].Value;
+
+                re[3].dishName = doc.DocumentNode.SelectSingleNode("//*[@id=\"ctl00_ContentPlaceHolder1_RecommandDIV\"]/div/ul/li[4]/p/a").InnerText.ToString();
+                re[3].dishPhoto = doc.DocumentNode.SelectSingleNode("//*[@id=\"ctl00_ContentPlaceHolder1_RecommandDIV\"]/div/ul/li[4]/div/a/img").Attributes["src"].Value;
+                re[3].dishUrl = "https://taft.coa.gov.tw" + doc.DocumentNode.SelectSingleNode("//*[@id=\"ctl00_ContentPlaceHolder1_RecommandDIV\"]/div/ul/li[4]/p/a").Attributes["href"].Value;
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private async Task<string> getPediaUrl(string url)
+        {
+            var doc = await Task.Factory.StartNew(() => client.Load(url));
+
+            var nodetest = doc.DocumentNode.SelectSingleNode("//*[@id=\"ctl00_ContentPlaceHolder1_ProductName\"]/a");
+
+            if (nodetest != null)
+            {
+                string toReturn = doc.DocumentNode.SelectSingleNode("//*[@id=\"ctl00_ContentPlaceHolder1_ProductName\"]/a").Attributes["href"].Value;
+                return toReturn;
+            }
+            else
+            {
+                return "NULL";
+            }
         }
     }
     
