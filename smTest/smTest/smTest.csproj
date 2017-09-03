@@ -156,7 +156,6 @@
     <Compile Include="Controllers\FBChannelModel.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Controllers\Resume.cs" />
-    <Compile Include="Dialogs\CarouselCardsDialog.cs" />
     <Compile Include="Dialogs\LuisDialog.cs" />
     <Compile Include="Dialogs\RootDialog.cs" />
     <Compile Include="Global.asax.cs">

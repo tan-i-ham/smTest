@@ -10,20 +10,15 @@ using System.Collections.Generic;
 using System.Data;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
-using Microsoft.ProjectOxford.Vision;
+
 using System.Drawing;
 using ZXing;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Bson.Serialization.Attributes;
 
-using Newtonsoft.Json.Linq;
-
-using System.Net.Http.Headers;
-using Autofac;
-using MongoDB.Driver.Builders;
 using System.Diagnostics;
-using smTest.Dialogs;
+using MongoDB.Driver.Builders;
 
 namespace MongoDBCreate
 {
@@ -56,16 +51,14 @@ namespace smTest
         Recipe[] topRecipe = new Recipe[5];
         Product[] ProductInfo = new Product[1];
         Resume[] ProductResume = new Resume[100];
-
-        
-  
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
+
             var connectionString = "mongodb://msp12:msp2017@ds123084.mlab.com:23084/msp";
             var client = new MongoClient(connectionString);
             var db = client.GetDatabase("msp");
             IMongoCollection<MongoDBCreate.ProductDB> collection = db.GetCollection<MongoDBCreate.ProductDB>("productResume");
-            
+
             if (activity.Type == ActivityTypes.Message)
             {
                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
@@ -77,51 +70,32 @@ namespace smTest
                     // uriName 是decode qr code 完後的網址
                     var filter = Builders<MongoDBCreate.ProductDB>.Filter.Eq("op", 1);
                     var update = Builders<MongoDBCreate.ProductDB>.Update
-                       .Set("Uriname", decodeQRCode(reply, activity.Attachments.First().ContentUrl));
+                        .Set("Uriname", decodeQRCode(reply, activity.Attachments.First().ContentUrl));
                     var result = await collection.UpdateOneAsync(filter, update);
-
-                    var user = collection.Find(r => r.op == 1).Limit(1).ToList();
-
-                    foreach (var tmp in user)
-                    {
-                        var hasRecipe = await getFurtherInfo(tmp.Uriname, topRecipe);
-                    }
-                    var update2 = Builders<MongoDBCreate.ProductDB>.Update
-                                    .Set("dishName1", topRecipe[0].dishName)
-                                    .Set("dishPhoto1", topRecipe[0].dishPhoto)
-                                    .Set("dishUrl1", topRecipe[0].dishUrl)
-                                    .Set("dishName2", topRecipe[1].dishName)
-                                    .Set("dishPhoto2", topRecipe[1].dishPhoto)
-                                    .Set("dishUrl2", topRecipe[1].dishUrl)
-                                    .Set("dishName3", topRecipe[2].dishName)
-                                    .Set("dishPhoto3", topRecipe[2].dishPhoto)
-                                    .Set("dishUrl3", topRecipe[2].dishUrl)
-                                    .Set("dishName4", topRecipe[3].dishName)
-                                    .Set("dishPhoto4", topRecipe[3].dishPhoto)
-                                    .Set("dishUrl4", topRecipe[3].dishUrl);
-
-                    var result2 = await collection.UpdateOneAsync(filter, update);
-
-                    // receivedText 是爬蟲過後的訊息
-                    //string receivedText = await PassScrapTextAsync(uriName);
+                    ////
+                    Trace.TraceInformation("imgfor");
+                    var user = collection.Find(new BsonDocument()).ToListAsync();
+                    Trace.TraceInformation("imgback");
+                    ////
 
                     Trace.TraceInformation("DB.");
-                    GenericTemplate(reply);
-                    Trace.TraceInformation("GenericTemplate done");
+                    GeneralTemplate(reply);
+                    Trace.TraceInformation("General done");
 
                 }
                 else if (activity.Text == "menu")
                 {
-                    Trace.TraceInformation("menu");
+                    Trace.TraceInformation("menu not fb");
 
-                    var recipes = collection.Find(r => r.op == 1).Limit(1).ToList();
+                    /*var recipes = collection.Find(r => r.op == 1).Limit(1).ToList();
 
                     foreach (var recipe in recipes)
                     {
                         reply.Text = recipe.dishName1;
-                    }
-
-                    await Conversation.SendAsync(activity, () => new CarouselCardsDialog());
+                        Trace.TraceInformation("menutext");
+                    }*/
+                    MenuTemplate(reply);
+                    //await Conversation.SendAsync(activity, () => new CarouselCardsDialog());
                 }
 
 
@@ -134,15 +108,11 @@ namespace smTest
                     
                     if (activity.Text == "try")
                     {
-                        var user = collection.Find(r => r.op == 1).Limit(1).ToList();
-
-                        foreach (var tmp in user)
-                        {
-                            reply.Text = tmp.Uriname;
-                        }
-
-                       
-                       // GenericTemplate(reply);
+                        Trace.TraceInformation("try");
+                   
+                        // GenericTemplate(reply);
+                        MenuTemplate(reply);
+                        Trace.TraceInformation("db_success");
                     }
 
                    
@@ -151,35 +121,33 @@ namespace smTest
 
                         Trace.TraceInformation("menu");
 
-                        var recipes = collection.Find(r => r.op == 1).Limit(1).ToList();
+                        /*var recipes = collection.Find(r => r.op == 1).Limit(1).ToList();
 
                         foreach (var recipe in recipes)
                         {
                             reply.Text = recipe.dishName1;
+                            Trace.TraceInformation("menutext");
                         }
-                        
-                        
-
-                       // await Conversation.SendAsync(activity, () => new CarouselCardsDialog());
+                        */
                     }
 
                     else if (activity.Text == "詳細生產履歷")
                     {
-                        var user = collection.Find(r => r.op == 1).Limit(1).ToList();
+                        //var user = collection.Find(r => r.op == 1).Limit(1).ToList();
                         string url = " ";
-
-                        foreach (var tmp in user)
+                        Trace.TraceInformation("detail");
+                        /*foreach (var tmp in user)
                         {
                             url = tmp.Uriname;
                         }
-                        reply.Attachments = await PassScrapTextAsync(reply, url);
+                        reply.Attachments = await PassScrapTextAsync(reply, url);*/
 
-                        Trace.TraceInformation("detail");
+                        Trace.TraceInformation("detail_done");
                     }
                     else if (activity.Text == "履歷資訊")
                     {
-                        await Conversation.SendAsync(activity, () => new CarouselCardsDialog());
-
+                        //await Conversation.SendAsync(activity, () => new CarouselCardsDialog());
+                        Trace.TraceInformation("reseme");
                         reply.Text = "test";
                         reply.SuggestedActions = new SuggestedActions()
                         {
@@ -197,15 +165,15 @@ namespace smTest
 
                     else if (fbData.message.quick_reply != null)
                     {
-                        var user = collection.Find(r => r.op == 1).Limit(1).ToList();
+                        //var user = collection.Find(r => r.op == 1).Limit(1).ToList();
                         string url=" ";
 
-                        foreach (var tmp in user)
+                        /*foreach (var tmp in user)
                         {
                             url = tmp.Uriname;
                         }
 
-                        var farmresults = await FarmRecord(url, ProductInfo);
+                        var farmresults = await FarmRecord(url, ProductInfo);*/
                         
                         switch (fbData.message.quick_reply.payload)
                         {
@@ -232,14 +200,20 @@ namespace smTest
 
 
                     else
-                    { 
+                    {
+                        reply.Text = "點選下列按鈕操作";
+                        GenericTemplate(reply);
                         //用 luis 去偵測使用者的意思
-                        await ProcessLUIS(activity, activity.Text);
+                        // await ProcessLUIS(activity, activity.Text);
+                        // reply.Text = "LUIS in FB";
                     }
                 }
                 else
                 {
-                    await ProcessLUIS(activity, activity.Text);
+                    reply.Text = "點選下列按鈕操作";
+                    GenericTemplate(reply);
+                    // await ProcessLUIS(activity, activity.Text);
+                    //reply.Text = "LUIS out FB";
                 }
                 await connector.Conversations.ReplyToActivityAsync(reply);
             }
@@ -252,6 +226,58 @@ namespace smTest
             await Conversation.SendAsync(activity, () => new Dialogs.LuisDialog());
         }
 
+        private void MenuTemplate(Activity reply)
+        {
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+            reply.Attachments = GetCardsAttachments();
+        }
+
+      
+        private static IList<Attachment> GetCardsAttachments()
+        {
+            Trace.TraceInformation("0903");
+            return new List<Attachment>()
+            {
+                 GetHeroCard(
+                    "Azure Functions",
+                    "Process events with a serverless code architecture",
+                    "An event-based serverless compute experience to accelerate your development. It can scale based on demand and you pay only for the resources you consume.",
+                    new CardImage(url: "https://azurecomcdn.azureedge.net/cvt-5daae9212bb433ad0510fbfbff44121ac7c759adc284d7a43d60dbbf2358a07a/images/page/services/functions/01-develop.png"),
+                    new CardAction(ActionTypes.OpenUrl, "Learn more", value: "https://azure.microsoft.com/en-us/services/functions/")),
+                GetHeroCard(
+                    "Azure Functions",
+                    "Process events with a serverless code architecture",
+                    "An event-based serverless compute experience to accelerate your development. It can scale based on demand and you pay only for the resources you consume.",
+                    new CardImage(url: "https://azurecomcdn.azureedge.net/cvt-5daae9212bb433ad0510fbfbff44121ac7c759adc284d7a43d60dbbf2358a07a/images/page/services/functions/01-develop.png"),
+                    new CardAction(ActionTypes.OpenUrl, "Learn more", value: "https://azure.microsoft.com/en-us/services/functions/")),
+                GetHeroCard(
+                    "Cognitive Services",
+                    "Build powerful intelligence into your applications to enable natural and contextual interactions",
+                    "Enable natural and contextual interaction with tools that augment users' experiences using the power of machine-based intelligence. Tap into an ever-growing collection of powerful artificial intelligence algorithms for vision, speech, language, and knowledge.",
+                    new CardImage(url: "https://azurecomcdn.azureedge.net/cvt-68b530dac63f0ccae8466a2610289af04bdc67ee0bfbc2d5e526b8efd10af05a/images/page/services/cognitive-services/cognitive-services.png"),
+                    new CardAction(ActionTypes.OpenUrl, "Learn more", value: "https://azure.microsoft.com/en-us/services/cognitive-services/")),
+                 GetHeroCard(
+                    "Cognitive Services",
+                    "Build powerful intelligence into your applications to enable natural and contextual interactions",
+                    "Enable natural and contextual interaction with tools that augment users' experiences using the power of machine-based intelligence. Tap into an ever-growing collection of powerful artificial intelligence algorithms for vision, speech, language, and knowledge.",
+                    new CardImage(url: "https://azurecomcdn.azureedge.net/cvt-68b530dac63f0ccae8466a2610289af04bdc67ee0bfbc2d5e526b8efd10af05a/images/page/services/cognitive-services/cognitive-services.png"),
+                    new CardAction(ActionTypes.OpenUrl, "Learn more", value: "https://azure.microsoft.com/en-us/services/cognitive-services/")),
+            };
+        }
+
+        private static Attachment GetHeroCard(string title, string subtitle, string text, CardImage cardImage, CardAction cardAction)
+        {
+            var heroCard = new HeroCard
+            {
+                Title = title,
+                Subtitle = subtitle,
+                Text = text,
+                Images = new List<CardImage>() { cardImage },
+                Buttons = new List<CardAction>() { cardAction },
+            };
+
+            return heroCard.ToAttachment();
+        }
 
         private async Task<IList<Attachment>> PassScrapTextAsync(Activity context, string url)
         {
@@ -326,7 +352,25 @@ namespace smTest
             Bitmap bitmap2 = new Bitmap(responseStream);
             return bitmap2;
         }
+        private void GeneralTemplate(Activity reply)
+        {
+            List<Attachment> att = new List<Attachment>();
+            att.Add(new HeroCard() //建立fb ui格式的api
+            {
+                Title = "歡迎來到我們的 ChatBot !",
+                Subtitle = "請選擇你要使用的服務",
+                Images = new List<CardImage>() { new CardImage("https://cdn.ready-market.com/1/9816a644//Templates/pic/vegetable.jpg?v=0d7a3372") },
+                Buttons = new List<CardAction>()
+                {
+                    new CardAction(){ Title = "上傳 QR code", Type=ActionTypes.ImBack, Value= "上傳 QR code" },
+                    new CardAction(){Title = "履歷資訊", Type= ActionTypes.ImBack, Value= "履歷資訊" },
+                    new CardAction(){Title = "我要去看產銷履歷網站", Type= ActionTypes.ImBack, Value= "https://taft.coa.gov.tw/" },
 
+                }
+            }.ToAttachment());
+            reply.Attachments = att;
+
+        }
         private void GenericTemplate(Activity reply)
         {
             List<Attachment> att = new List<Attachment>();
