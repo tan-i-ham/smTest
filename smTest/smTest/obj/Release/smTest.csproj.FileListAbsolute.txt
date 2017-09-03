@@ -125,3 +125,13 @@ D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTe
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\obj\Release\smTest.csprojResolveAssemblyReference.cache
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\obj\Release\Bot Application.dll
 D:\google download\MSP-SummerProject-master\MSP-SummerProject-master\smTest\smTest\obj\Release\Bot Application.pdb
+D:\summerProject2017\smTest\smTest\bin\MongoDB.Bson.dll
+D:\summerProject2017\smTest\smTest\bin\MongoDB.Driver.Core.dll
+D:\summerProject2017\smTest\smTest\bin\MongoDB.Driver.dll
+D:\summerProject2017\smTest\smTest\bin\MongoDB.Driver.Legacy.dll
+D:\summerProject2017\smTest\smTest\bin\System.Runtime.InteropServices.RuntimeInformation.dll
+D:\summerProject2017\smTest\smTest\bin\MongoDB.Bson.xml
+D:\summerProject2017\smTest\smTest\bin\MongoDB.Driver.xml
+D:\summerProject2017\smTest\smTest\bin\MongoDB.Driver.Core.xml
+D:\summerProject2017\smTest\smTest\bin\MongoDB.Driver.Legacy.xml
+D:\summerProject2017\smTest\smTest\bin\Microsoft.Rest.ClientRuntime.xml

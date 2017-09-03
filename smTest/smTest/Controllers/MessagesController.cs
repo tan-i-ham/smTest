@@ -23,6 +23,7 @@ using System.Net.Http.Headers;
 using Autofac;
 using MongoDB.Driver.Builders;
 using System.Diagnostics;
+using smTest.Dialogs;
 
 namespace MongoDBCreate
 {
@@ -32,6 +33,18 @@ namespace MongoDBCreate
         public ObjectId ID { get; set;}
         public string Uriname { get; set; }
         public int op { get; set; }
+        public string dishName1 { get; set; }
+        public string dishPhoto1 { get; set; }
+        public string dishUrl1 { get; set; }
+        public string dishName2 { get; set; }
+        public string dishPhoto2 { get; set; }
+        public string dishUrl2 { get; set; }
+        public string dishName3 { get; set; }
+        public string dishPhoto3 { get; set; }
+        public string dishUrl3 { get; set; }
+        public string dishName4 { get; set; }
+        public string dishPhoto4 { get; set; }
+        public string dishUrl4 { get; set; }
     }
 }
 namespace smTest
@@ -61,36 +74,56 @@ namespace smTest
                 //user傳一張照片
                 if (activity.Attachments?.Count > 0 && activity.Attachments.First().ContentType.StartsWith("image"))//IF NULL 不會往下,有東西才繼續run
                 {
-                    /*var connectionString = "mongodb://msp12:msp2017@ds123084.mlab.com:23084/msp";
-                    var client = new MongoClient(connectionString);
-                    var db = client.GetDatabase("msp");
-                    IMongoCollection<MongoDBCreate.ProductDB> collection = db.GetCollection<MongoDBCreate.ProductDB>("productResume");*/
-                    //MongoDBCreate.ProductDB newItem = new MongoDBCreate.ProductDB { Uriname = decodeQRCode(reply, activity.Attachments.First().ContentUrl), op = 1 };
-
-
                     // uriName 是decode qr code 完後的網址
-                    //var UriName = decodeQRCode(reply, activity.Attachments.First().ContentUrl);
-
-                    //collection.InsertOne(newItem);
                     var filter = Builders<MongoDBCreate.ProductDB>.Filter.Eq("op", 1);
                     var update = Builders<MongoDBCreate.ProductDB>.Update
-                        .Set("Uriname", decodeQRCode(reply, activity.Attachments.First().ContentUrl));
+                       .Set("Uriname", decodeQRCode(reply, activity.Attachments.First().ContentUrl));
                     var result = await collection.UpdateOneAsync(filter, update);
+
                     var user = collection.Find(r => r.op == 1).Limit(1).ToList();
 
-                    /*foreach (var tmp in user)
+                    foreach (var tmp in user)
                     {
-                        reply.Text = tmp.Uriname;
-                        continue;
-                    }*/
+                        var hasRecipe = await getFurtherInfo(tmp.Uriname, topRecipe);
+                    }
+                    var update2 = Builders<MongoDBCreate.ProductDB>.Update
+                                    .Set("dishName1", topRecipe[0].dishName)
+                                    .Set("dishPhoto1", topRecipe[0].dishPhoto)
+                                    .Set("dishUrl1", topRecipe[0].dishUrl)
+                                    .Set("dishName2", topRecipe[1].dishName)
+                                    .Set("dishPhoto2", topRecipe[1].dishPhoto)
+                                    .Set("dishUrl2", topRecipe[1].dishUrl)
+                                    .Set("dishName3", topRecipe[2].dishName)
+                                    .Set("dishPhoto3", topRecipe[2].dishPhoto)
+                                    .Set("dishUrl3", topRecipe[2].dishUrl)
+                                    .Set("dishName4", topRecipe[3].dishName)
+                                    .Set("dishPhoto4", topRecipe[3].dishPhoto)
+                                    .Set("dishUrl4", topRecipe[3].dishUrl);
+
+                    var result2 = await collection.UpdateOneAsync(filter, update);
+
                     // receivedText 是爬蟲過後的訊息
                     //string receivedText = await PassScrapTextAsync(uriName);
-                 
+
                     Trace.TraceInformation("DB.");
-                    GenericTemplate(activity);
+                    GenericTemplate(reply);
                     Trace.TraceInformation("GenericTemplate done");
 
                 }
+                else if (activity.Text == "menu")
+                {
+                    Trace.TraceInformation("menu");
+
+                    var recipes = collection.Find(r => r.op == 1).Limit(1).ToList();
+
+                    foreach (var recipe in recipes)
+                    {
+                        reply.Text = recipe.dishName1;
+                    }
+
+                    await Conversation.SendAsync(activity, () => new CarouselCardsDialog());
+                }
+
 
                 else if (activity.ChannelId == "facebook")
                 {
@@ -107,37 +140,78 @@ namespace smTest
                         {
                             reply.Text = tmp.Uriname;
                         }
+
+                       
                        // GenericTemplate(reply);
                     }
 
-                    else if (activity.Text == "上傳QR code")
+                   
+                    else if (activity.Text == "menu")
                     {
-                        reply.Text = "請上傳QR code圖片";
-                        //上傳圖片之後跑的東西
 
-                        if (activity.Attachments?.Count > 0 && activity.Attachments.First().ContentType.StartsWith("image"))//IF NULL 不會往下,有東西才繼續run
+                        Trace.TraceInformation("menu");
+
+                        var recipes = collection.Find(r => r.op == 1).Limit(1).ToList();
+
+                        foreach (var recipe in recipes)
                         {
-                            //user傳一張照片
-                            decodeQRCode(reply, activity.Attachments.First().ContentUrl);
-
+                            reply.Text = recipe.dishName1;
                         }
+                        
+                        
+
+                       // await Conversation.SendAsync(activity, () => new CarouselCardsDialog());
                     }
 
+                    else if (activity.Text == "詳細生產履歷")
+                    {
+                        var user = collection.Find(r => r.op == 1).Limit(1).ToList();
+                        string url = " ";
+
+                        foreach (var tmp in user)
+                        {
+                            url = tmp.Uriname;
+                        }
+                        reply.Attachments = await PassScrapTextAsync(reply, url);
+
+                        Trace.TraceInformation("detail");
+                    }
+                    else if (activity.Text == "履歷資訊")
+                    {
+                        await Conversation.SendAsync(activity, () => new CarouselCardsDialog());
+
+                        reply.Text = "test";
+                        reply.SuggestedActions = new SuggestedActions()
+                        {
+                            Actions = new List<CardAction>()
+                            {
+                                new CardAction(){Title="生產者", Type=ActionTypes.ImBack, Value="生產者"},
+                                new CardAction(){Title="產地", Type=ActionTypes.ImBack, Value="產地"},
+                                new CardAction(){Title="產品名稱", Type=ActionTypes.ImBack, Value="產品名稱"},
+                                new CardAction(){Title="生產日期", Type=ActionTypes.ImBack, Value="生產日期"},
+                             
+                            }
+                        };
+                    }
 
 
                     else if (fbData.message.quick_reply != null)
                     {
                         var user = collection.Find(r => r.op == 1).Limit(1).ToList();
-                        string url="aaa";
+                        string url=" ";
+
                         foreach (var tmp in user)
                         {
                             url = tmp.Uriname;
                         }
+
                         var farmresults = await FarmRecord(url, ProductInfo);
+                        
                         switch (fbData.message.quick_reply.payload)
                         {
                             case "生產者":
                                 reply.Text = ProductInfo[0].Farmer;
+
                                 break;
                             case "產地":
                                 reply.Text = ProductInfo[0].Origin;
@@ -147,12 +221,13 @@ namespace smTest
                                 break;
                             case "生產日期":
                                 reply.Text = ProductInfo[0].PackedDate;
+
                                 break;
                             default:
                                 reply.Text = "failed!!";
                                 break;
                         }
-                        reply.Text = $"your choice is {fbData.message.quick_reply.payload}";
+                        //reply.Text = $"your choice is {fbData.message.quick_reply.payload}";
                     }
 
 
@@ -160,19 +235,14 @@ namespace smTest
                     { 
                         //用 luis 去偵測使用者的意思
                         await ProcessLUIS(activity, activity.Text);
-
                     }
                 }
-
-
                 else
                 {
-                    GenericTemplate(reply);
+                    await ProcessLUIS(activity, activity.Text);
                 }
                 await connector.Conversations.ReplyToActivityAsync(reply);
             }
-            
-            
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;
         }
@@ -183,81 +253,50 @@ namespace smTest
         }
 
 
-        private async Task<String> PassScrapTextAsync(string uriName)
+        private async Task<IList<Attachment>> PassScrapTextAsync(Activity context, string url)
         {
             Uri uriResult;
-            bool result = Uri.TryCreate(uriName, UriKind.Absolute, out uriResult)
+            bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult)
                 && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+
+
+            List<Attachment> att = new List<Attachment>();
             if (result == true)
             {
-                int cnt = await ProductionRecord (uriName, ProductResume);
-                string alltext = "作業日期\t\t作業種類\t\t作業內容\n\n============================\n\n";
 
-                 if (cnt != -1)
-                 {
+                int cnt = await ProductionRecord(url, ProductResume);
+                // string alltext = "作業日期\t\t作業種類\t\t作業內容\n\n============================\n\n";
+
+                if (cnt != -1)
+                {
                     for (int i = 0; i < cnt; ++i)
                     {
-                        alltext += String.Join(", ", ProductResume[i].Date);
-                        alltext += "\t\t";
-                        alltext += String.Join(", ", ProductResume[i].Type);
-                        alltext += "\t\t";
-                        alltext += String.Join(", ", ProductResume[i].Content);
-                        alltext += "\n\n";
+                        ThumbnailCard tc = new ThumbnailCard()
+                        {
+                            Title = ProductResume[i].Date,
+                            Subtitle = ProductResume[i].Type + "\t" + ProductResume[i].Content,
+
+                        };
+
+                        att.Add(tc.ToAttachment());
+
                     }
-                } else
+                }
+                else
                 {
-                    alltext = "ERROR in parsing resume\n";
+                    context.Text = "failed!!";
                 }
 
-                var farmresults = await FarmRecord(uriName, ProductInfo);
-
-                if (farmresults) {
-                    alltext += "\n**************\n";
-
-                    alltext += String.Join("\n", ProductInfo[0].CompanyShort);
-                    alltext += String.Join("\n", ProductInfo[0].Farmer);
-                    alltext += String.Join("\n", ProductInfo[0].Origin);
-                    alltext += String.Join("\n", ProductInfo[0].PackedDate);
-                    alltext += String.Join("\n", ProductInfo[0].ProductName);
-                    alltext += String.Join("\n", ProductInfo[0].VarifiedCompany);
-                }
-                else {
-                    alltext += String.Join("\n", "Errors in parsing farmresults\n");
-                }
-
-                bool hasRecipe = await getFurtherInfo(uriName, topRecipe);
-
-                if (hasRecipe) {
-                    alltext += "\n**************\n";
-
-                    for (int i = 0; i < 4; ++i) {
-                        alltext += String.Join("\n", topRecipe[i].dishName);
-                        alltext += String.Join("\n", topRecipe[i].dishPhoto);
-                        alltext += String.Join("\n", topRecipe[i].dishUrl);
-                        alltext += String.Join("\n", "------------------\n");
-                    }
-                }
-                else {
-                    alltext += String.Join("\n", "No recipe found\n");
-                }
-
-                var pediaUrl = await getPediaUrl(uriName);
-
-                if (pediaUrl != "NULL") {
-                    alltext += String.Join("\n", pediaUrl);
-                }
-                else {
-                    alltext += String.Join("\n", "No URL found\n");
-                }
-                return alltext;
+                return att;
             }
             else
             {
-                return result.ToString() + " 不是網址!";
+                return att;
+
+                //context.Text = result.ToString() + " 不是網址!";
             }
         }
 
-      
         //讀取QrCode
         private string decodeQRCode(Activity reply, string url)
         {
@@ -298,14 +337,14 @@ namespace smTest
                 Images = new List<CardImage>() { new CardImage("https://cdn.ready-market.com/1/9816a644//Templates/pic/vegetable.jpg?v=0d7a3372") },
                 Buttons = new List<CardAction>()
                 {
-                    new CardAction(){ Title = "詳細生產履歷", Type=ActionTypes.OpenUrl, Value= "http://taft.coa.gov.tw/" },
-                    new CardAction(){Title = "產地2", Type= ActionTypes.ImBack, Value= $"南投" },
+                    new CardAction(){ Title = "詳細生產履歷", Type=ActionTypes.ImBack, Value= "詳細生產履歷" },
+                    new CardAction(){Title = "履歷資訊", Type= ActionTypes.ImBack, Value= "履歷資訊" },
+                    new CardAction(){Title = "推薦菜單", Type= ActionTypes.ImBack, Value= "推薦菜單" },
 
                 }
             }.ToAttachment());
-
             reply.Attachments = att;
-            
+
         }
 
         // 擷取產品履歷資料
